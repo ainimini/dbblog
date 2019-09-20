@@ -152,10 +152,10 @@ dbblog-core -> dbblog-auth -> dbblog-manage -> dbblog-portal -> dbblog-search
 ![4.png](http://oss.dblearn.cn/dbblog/20190310/ee69937e2bd9494f882da788932123ca.png)
 
 
-##项目上线
+## 项目上线
 >项目上线需要自己的服务器，可以在网上搜索教程，我用的是阿里云服务器，`docker`部署上线
 
-###`docker`部署上线（后端）
+### `docker`部署上线（后端）
 >创建Dockerfile文件内容如下：
 ```
 FROM java:8
@@ -191,7 +191,7 @@ ENTRYPOINT ：为了缩短 Tomcat 的启动时间，添加java.security.egd的�
 
 `docker run -d -p 8080:8080 dbblog-backend`
 
-###`docker`部署上线（前端）
+### `docker`部署上线（前端）
 >将前端build系统，生成dist
 
 >创建Dockerfile文件内容如下：
