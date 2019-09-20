@@ -5,7 +5,8 @@
         <div class="top-area">
           <img src="../../../assets/background.jpg" alt="">
           <div class="site-info">
-            <h1 class="site-name">DB's Blog</h1>
+            <!--<h1 class="site-name">DB's Blog</h1>-->
+            <h1 class="site-name">Ainimini's Blog</h1>
             <h1 class="site-desc">Write the code, Change the World</h1>
           </div>
         </div>

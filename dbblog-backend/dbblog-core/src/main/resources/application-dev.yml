@@ -45,8 +45,8 @@ spring:
   # elasticsearch配置
   data:
     elasticsearch:
-      cluster-name: elasticsearch
-      cluster-nodes: 127.0.0.1:9300
+      cluster-name: docker-cluster
+      cluster-nodes: 47.240.48.172:9300
   # rabbitMQ配置
   rabbitmq:
     host: 47.240.48.172

@@ -1,8 +1,11 @@
 FROM java:8
-EXPOSE 8080
+
+MAINTAINER Aini m18790635989@163.com
 
 VOLUME /tmp
-ADD /dbblog-search/target/dbblog.jar /app.jar
-RUN bash -c 'touch /app.jar'
-RUN /sbin/ip route|awk '/default/ { print  $3,"\tdockerhost" }' >> /etc/hosts
-ENTRYPOINT ["java","-jar","/app.jar"]
+
+ADD dbblog.jar dbblog-search.jar
+
+RUN bash -c 'touch /dbblog-search.jar'
+
+ENTRYPOINT ["java","-Djava.security.egd=file:/dev/./urandom","-jar","/dbblog-search.jar"]
