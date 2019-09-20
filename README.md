@@ -152,3 +152,108 @@ dbblog-core -> dbblog-auth -> dbblog-manage -> dbblog-portal -> dbblog-search
 ![4.png](http://oss.dblearn.cn/dbblog/20190310/ee69937e2bd9494f882da788932123ca.png)
 
 
+##项目上线
+>项目上线需要自己的服务器，可以在网上搜索教程，我用的是阿里云服务器，`docker`部署上线
+
+###`docker`部署上线（后端）
+>创建Dockerfile文件内容如下：
+```
+FROM java:8
+
+VOLUME /tmp
+
+ADD mystory-1.0.0-SNAPSHOT.jar app.jar
+
+RUN bash -c 'touch /app.jar'
+
+ENTRYPOINT ["java","-Djava.security.egd=file:/dev/./urandom","-jar","/app.jar"]
+```
+
+介绍一下：
+
+FROM ：表示使用 Jdk8 环境 为基础镜像，如果镜像不是本地的会从 DockerHub 进行下载
+
+MAINTAINER ：指定维护者的信息
+
+VOLUME ：VOLUME 指向了一个/tmp的目录，由于 Spring Boot 使用内置的Tomcat容器，Tomcat 默认使用/tmp作为工作目录。这个命令的效果是：在宿主机的/var/lib/docker目录下创建一个临时文件并把它链接到容器中的/tmp目录
+
+ADD ：拷贝文件并且重命名(前面是上传jar包的名字，后面是重命名)
+
+RUN ：每条run指令在当前基础镜像执行，并且提交新镜像
+
+ENTRYPOINT ：为了缩短 Tomcat 的启动时间，添加java.security.egd的系统属性指向/dev/urandom作为 ENTRYPOINT
+>将创建好的Dockerfile文件和jar包上传到服务器
+
+>运行如下命令，注意不要少了最后的“ . ” 运行命令要进入到文件内在执行
+
+`docker build -t dbblog-backend .`
+>运行生成成功的镜像
+
+`docker run -d -p 8080:8080 dbblog-backend`
+
+###`docker`部署上线（前端）
+>将前端build系统，生成dist
+
+>创建Dockerfile文件内容如下：
+```
+# 使用Nginx
+FROM nginx:1.15
+# FROM hub.c.163.com/library/nginx 
+
+# 定义作者
+MAINTAINER yaosiyuan <yaosiyuanmail@163.com>
+
+# 将dist文件中的内容复制到 /usr/share/nginx/html/ 这个目录下面
+COPY dist/  /usr/share/nginx/html/
+
+## 删除nginx 默认配置
+RUN rm /etc/nginx/conf.d/default.conf
+## 添加我们自己的配置 default.conf 在下面
+ADD default.conf /etc/nginx/conf.d/ 
+
+#COPY nginx.conf /etc/nginx/nginx.conf
+RUN echo 'echo init ok!!'
+```
+ADD 添加的配置文件 要与自己创建的default.conf文件的路径匹配，否则访问页面会报404
+>创建 nginx配置文件
+
+在每个项目的文件下新建文件default.conf
+```
+server {
+    listen       80;
+    server_name  localhost;
+
+    #charset koi8-r;
+    access_log  /var/log/nginx/host.access.log  main;
+    error_log  /var/log/nginx/error.log  error;
+
+    location / {
+        root   /usr/share/nginx/html;
+        index  index.html index.htm;
+        try_files $uri $uri/ /index.html;
+    }
+
+    #error_page  404              /404.html;
+
+    # redirect server error pages to the static page /50x.html
+    #
+    error_page   500 502 503 504  /50x.html;
+    location = /50x.html {
+        root   /usr/share/nginx/html;
+    }
+}
+```
+>将dist、default.conf和Dockerfile上传到服务器上
+
+>运行如下命令，注意不要少了最后的“ . ” 运行命令要进入到文件内在执行
+
+`docker build -t dbblog-frontend .`
+-t 是给镜像命名 ，test是生成镜像的名字，. 是基于当前目录的Dockerfile来构建镜像。
+>运行生成成功的镜像
+
+docker run -p 3000:80 -d --name dbblog-frontend 镜像id
+>访问
+
+`http://47.240.48.172:3000/`
+
+```前端的后台管理，操作跟前端部署一样```
